@@ -241,3 +241,81 @@
     // Address collapse init
     const addressCollapseEl = document.getElementById("addressBox");
     const addressCollapse = new bootstrap.Collapse(addressCollapseEl, { toggle: false });
+
+    function handleTypeChange() {
+      const isPickup = document.getElementById("pickup").checked;
+      setAlert("");
+
+      if (isPickup) addressCollapse.show();
+      else addressCollapse.hide();
+    }
+
+    document.getElementById("office").addEventListener("change", handleTypeChange);
+    document.getElementById("pickup").addEventListener("change", handleTypeChange);
+
+    // Navbar / Logo click handling via data-page
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-page]");
+      if (!el) return;
+      e.preventDefault();
+      showPage(el.getAttribute("data-page"));
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", processRegistration);
+
+    function processRegistration() {
+      setAlert("");
+
+      const typeValue = document.querySelector('input[name="type"]:checked').value;
+      const clothes = document.getElementById("clothes").value.trim();
+      const crisis = document.getElementById("crisis-select").value;
+      const plz = document.getElementById("plz").value.trim();
+
+      if (!clothes) {
+        setAlert("Bitte geben Sie die Art der Kleidung an.");
+        document.getElementById("clothes").focus();
+        return;
+      }
+
+      if (typeValue === "pickup") {
+        if (!plz) {
+          setAlert("Bitte geben Sie die Postleitzahl für die Abholung an.");
+          document.getElementById("plz").focus();
+          return;
+        }
+        if (!plz.startsWith("12")) {
+          setAlert("Abholung nicht möglich: Die PLZ muss für unser Sammelfahrzeug mit 12 beginnen.");
+          document.getElementById("plz").focus();
+          return;
+        }
+      }
+
+      // UI Wechsel (Bootstrap d-none)
+      document.getElementById("form-card").classList.add("d-none");
+      document.getElementById("success-card").classList.remove("d-none");
+
+      const now = new Date();
+      const ort = typeValue === "office" ? "Geschäftsstelle" : `Abholung (PLZ: ${plz})`;
+
+      document.getElementById("result-details").innerHTML =
+        `<p class="mb-1"><strong>Kleidung:</strong> ${escapeHtml(clothes)}</p>` +
+        `<p class="mb-1"><strong>Krisengebiet:</strong> ${escapeHtml(crisis)}</p>` +
+        `<p class="mb-1"><strong>Ort:</strong> ${escapeHtml(ort)}</p>` +
+        `<p class="mb-0"><strong>Zeitpunkt:</strong> ${now.toLocaleString("de-DE")}</p>`;
+    }
+
+    // kleine Sicherheit gegen HTML-Injection in innerHTML
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      }[m]));
+    }
+
+    document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+  </script>
+</body>
+</html>
