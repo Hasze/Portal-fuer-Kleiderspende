@@ -215,7 +215,7 @@
   <script>
     const pages = ["portal", "crisis", "about"];
 
-    function showPage(pageId) {
+    function Seitewechseln(pageId) {
       for (const p of pages) {
         document.getElementById(p + "-page").classList.toggle("d-none", p !== pageId);
       }
@@ -258,7 +258,7 @@
       const el = e.target.closest("[data-page]");
       if (!el) return;
       e.preventDefault();
-      showPage(el.getAttribute("data-page"));
+      Seitewechseln(el.getAttribute("data-page"));
     });
 
     document.getElementById("submitBtn").addEventListener("click", processRegistration);
@@ -319,3 +319,4 @@
   </script>
 </body>
 </html>
+
